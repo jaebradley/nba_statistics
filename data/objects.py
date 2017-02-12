@@ -30,6 +30,9 @@ class Season(Enum):
 
     @staticmethod
     def value_of(start_time, end_time):
+        assert isinstance(start_time, datetime.datetime)
+        assert isinstance(end_time, datetime.datetime)
+
         for season in Season:
             if season.value['start_time'] == start_time and season.value['end_time'] == end_time:
                 return season
