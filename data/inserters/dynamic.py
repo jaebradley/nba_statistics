@@ -65,9 +65,15 @@ def insert_box_scores():
             logger.info('Getting traditional box score for: %s', game.source_id)
             traditional_box_score = NbaClient.get_traditional_box_score(game_id=str(game.source_id))
             for player_box_score in traditional_box_score.player_box_scores:
-                logger.info(player_box_score.player.__dict__)
-                player, created = PlayerModel.objects.get_or_create(name=player_box_score.player.name, source_id=player_box_score.player.id)
-                logger.info('Created: %s | Player: %s', created, player)
+                player_name = player_box_score.player.name.strip()
+                player_id = player_box_score.player.id
+
+                try:
+                    player, created = PlayerModel.objects.get_or_create(name=player_name, source_id=player_id)
+                    logger.info('Created: %s | Player: %s', created, player)
+                except IntegrityError:
+                    logger.error('Player with same source id: %s but different name: %s', player_id, player_name)
+                    player = PlayerModel.objects.get(source_id=player_id)
 
                 box_score, created = NbaGamePlayerBoxScoreModel.objects.get_or_create(
                         game=game, player=player, status=player_box_score.player.status.type.value,
