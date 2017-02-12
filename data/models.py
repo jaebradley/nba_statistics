@@ -11,7 +11,7 @@ class Position(Model):
     name = CharField(max_length=100, unique=True)
 
     def __unicode__(self):
-        return self.name
+        return '{0}'.format(self.name)
 
 
 class Season(Model):
@@ -54,7 +54,7 @@ class Game(Model):
         unique_together = ('home_team', 'away_team', 'season', 'start_time')
 
     def __unicode__(self):
-        return '{0} - {1} - {2} - {3} - {4} - {5}'.format(self.home_team, self.away_team, self.season, self.start_time, self.source_id)
+        return '{0} - {1} - {2} - {3} - {4}'.format(self.home_team, self.away_team, self.season, self.start_time, self.source_id)
 
 
 class GamePlayerBoxScore(Model):
