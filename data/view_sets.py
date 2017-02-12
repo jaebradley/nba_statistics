@@ -50,6 +50,13 @@ class SeasonViewSet(QuerySetReadOnlyViewSet):
     def list_seasons(self, request, *args, **kwargs):
         return self.build_response(queryset=self.get_queryset())
 
+    def retrieve_team(self, request, *args, **kwargs):
+        result = self.get_queryset()
+        if 'team_id' in kwargs:
+            result = result.filter(id=kwargs.get('team_id'))
+
+        return self.build_response(queryset=result)
+
 
 class PlayerViewSet(QuerySetReadOnlyViewSet):
     serializer_class = PlayerSerializer
