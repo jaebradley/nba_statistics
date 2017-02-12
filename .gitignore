@@ -1,0 +1,8 @@
+.idea/
+*.pyc
+.coverage
+dist/
+*.egg-info/
+*.log
+.env
+staticfiles
