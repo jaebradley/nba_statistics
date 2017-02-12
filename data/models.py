@@ -15,11 +15,8 @@ class Position(Model):
 
 
 class Season(Model):
-    start_time = DateTimeField()
-    end_time = DateTimeField()
-
-    class Meta:
-        unique_together = ('start_time', 'end_time')
+    start_time = DateTimeField(unique=True)
+    end_time = DateTimeField(unique=True)
 
     def __unicode__(self):
         return '{0} - {1}'.format(self.start_time, self.end_time)
