@@ -67,6 +67,9 @@ class PlayerViewSet(QuerySetReadOnlyViewSet):
         if 'source_id' in kwargs:
             result = result.filter(source_id=kwargs.get('source_id'))
 
+        if 'name' in kwargs:
+            result = result.filter(name=kwargs.get('name'))
+
         return self.build_response(queryset=result)
 
     def retrieve_player(self, request, *args, **kwargs):
