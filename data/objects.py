@@ -22,8 +22,17 @@ class Season(Enum):
         'end_time': pytz.timezone('America/New_York').localize(datetime.datetime(2016, 6, 20, 20, 0, 0, 0))
     }
 
+    def get_start_time(self):
+        return self.value['start_time']
+
+    def get_end_time(self):
+        return self.value['end_time']
+
     @staticmethod
     def value_of(start_time, end_time):
+        assert isinstance(start_time, datetime.datetime)
+        assert isinstance(end_time, datetime.datetime)
+
         for season in Season:
             if season.value['start_time'] == start_time and season.value['end_time'] == end_time:
                 return season
@@ -122,6 +131,9 @@ class Team(Enum):
     washington_wizards = {
         'name': 'Washington Wizards'
     }
+
+    def get_name(self):
+        return self.value['name']
 
     @staticmethod
     def value_of(name):
