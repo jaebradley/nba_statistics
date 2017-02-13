@@ -21,6 +21,18 @@ class Season(Enum):
         'start_time': pytz.timezone('America/New_York').localize(datetime.datetime(2015, 10, 28, 20, 0, 0, 0)),
         'end_time': pytz.timezone('America/New_York').localize(datetime.datetime(2016, 6, 20, 20, 0, 0, 0))
     }
+    nba_2015 = {
+        'start_time': pytz.timezone('America/New_York').localize(datetime.datetime(2014, 10, 28, 20, 0, 0, 0)),
+        'end_time': pytz.timezone('America/New_York').localize(datetime.datetime(2015, 6, 16, 21, 0, 0, 0))
+    }
+    nba_2014 = {
+        'start_time': pytz.timezone('America/New_York').localize(datetime.datetime(2013, 10, 29, 19, 0, 0, 0)),
+        'end_time': pytz.timezone('America/New_York').localize(datetime.datetime(2014, 6, 15, 20, 0, 0, 0))
+    }
+    nba_2013 = {
+        'start_time': pytz.timezone('America/New_York').localize(datetime.datetime(2012, 10, 30, 19, 0, 0, 0)),
+        'end_time': pytz.timezone('America/New_York').localize(datetime.datetime(2013, 6, 20, 21, 0, 0, 0))
+    }
 
     def get_start_time(self):
         return self.value['start_time']
