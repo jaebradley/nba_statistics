@@ -9,6 +9,17 @@ from data.serializers import TeamSerializer, PositionSerializer, SeasonSerialize
     GamePlayerBoxScoreSerializer, TeamPlayerSerializer
 
 
+class QuerySetReadOnlyViewSet(ReadOnlyModelViewSet):
+    def build_response(self, queryset):
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+
 class PositionViewSet(ReadOnlyModelViewSet):
     serializer_class = PositionSerializer
 
@@ -48,22 +59,17 @@ class PlayerViewSet(ReadOnlyModelViewSet):
         return result
 
 
-class TeamPlayerViewSet(ReadOnlyModelViewSet):
+class TeamPlayerViewSet(QuerySetReadOnlyViewSet):
     serializer_class = TeamPlayerSerializer
+    queryset = TeamPlayer.objects.all().order_by('team__name', 'player__name')
 
-    def get_queryset(self):
-        result = TeamPlayer.objects.all().order_by('team__name', 'player__name')
+    def list_team_players(self, request, *args, **kwargs):
+        result = self.queryset.filter(team__id=kwargs.get('team_id'))
+        return self.build_response(queryset=result)
 
-        player_id = self.request.query_params.get('player_id')
-        team_id = self.request.query_params.get('team_id')
-
-        if player_id is not None:
-            result = result.filter(player__id=player_id)
-
-        if team_id is not None:
-            result = result.filter(team__id=team_id)
-
-        return result
+    def retrieve_team_player(self, request, *args, **kwargs):
+        result = self.queryset.filter(team__id=kwargs.get('team_id')).filter(player__id=kwargs.get('player_id'))
+        return self.build_response(queryset=result)
 
 
 class GameViewSet(ReadOnlyModelViewSet):
