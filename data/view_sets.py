@@ -4,9 +4,9 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ReadOnlyModelViewSet
 from datetime import datetime
 
-from data.models import Team, Position, Season, Player, Game, GamePlayerBoxScore
+from data.models import Team, Position, Season, Player, Game, GamePlayerBoxScore, TeamPlayer
 from data.serializers import TeamSerializer, PositionSerializer, SeasonSerializer, PlayerSerializer, GameSerializer, \
-    GamePlayerBoxScoreSerializer
+    GamePlayerBoxScoreSerializer, TeamPlayerSerializer
 
 
 class QuerySetReadOnlyViewSet(ReadOnlyModelViewSet):
@@ -59,6 +59,19 @@ class PlayerViewSet(ReadOnlyModelViewSet):
         return result
 
 
+class TeamPlayerViewSet(QuerySetReadOnlyViewSet):
+    serializer_class = TeamPlayerSerializer
+    queryset = TeamPlayer.objects.all().order_by('team__name', 'player__name')
+
+    def list_team_players(self, request, *args, **kwargs):
+        result = self.queryset.filter(team__id=kwargs.get('team_id'))
+        return self.build_response(queryset=result)
+
+    def retrieve_team_player(self, request, *args, **kwargs):
+        result = self.queryset.filter(team__id=kwargs.get('team_id')).filter(player__id=kwargs.get('player_id'))
+        return self.build_response(queryset=result)
+
+
 class GameViewSet(ReadOnlyModelViewSet):
     serializer_class = GameSerializer
 
@@ -85,7 +98,7 @@ class GameViewSet(ReadOnlyModelViewSet):
         return result
 
 
-class GamePlayerBoxScoreViewSet(QuerySetReadOnlyViewSet):
+class GamePlayerBoxScoreViewSet(ReadOnlyModelViewSet):
     serializer_class = GamePlayerBoxScoreSerializer
 
     def get_queryset(self):
