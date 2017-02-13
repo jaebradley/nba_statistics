@@ -4,20 +4,9 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ReadOnlyModelViewSet
 from datetime import datetime
 
-from data.models import Team, Position, Season, Player, Game, GamePlayerBoxScore
+from data.models import Team, Position, Season, Player, Game, GamePlayerBoxScore, TeamPlayer
 from data.serializers import TeamSerializer, PositionSerializer, SeasonSerializer, PlayerSerializer, GameSerializer, \
-    GamePlayerBoxScoreSerializer
-
-
-class QuerySetReadOnlyViewSet(ReadOnlyModelViewSet):
-    def build_response(self, queryset):
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
+    GamePlayerBoxScoreSerializer, TeamPlayerSerializer
 
 
 class PositionViewSet(ReadOnlyModelViewSet):
@@ -59,6 +48,24 @@ class PlayerViewSet(ReadOnlyModelViewSet):
         return result
 
 
+class TeamPlayerViewSet(ReadOnlyModelViewSet):
+    serializer_class = TeamPlayerSerializer
+
+    def get_queryset(self):
+        result = TeamPlayer.objects.all().order_by('team__name', 'player__name')
+
+        player_id = self.request.query_params.get('player_id')
+        team_id = self.request.query_params.get('team_id')
+
+        if player_id is not None:
+            result = result.filter(player__id=player_id)
+
+        if team_id is not None:
+            result = result.filter(team__id=team_id)
+
+        return result
+
+
 class GameViewSet(ReadOnlyModelViewSet):
     serializer_class = GameSerializer
 
@@ -85,7 +92,7 @@ class GameViewSet(ReadOnlyModelViewSet):
         return result
 
 
-class GamePlayerBoxScoreViewSet(QuerySetReadOnlyViewSet):
+class GamePlayerBoxScoreViewSet(ReadOnlyModelViewSet):
     serializer_class = GamePlayerBoxScoreSerializer
 
     def get_queryset(self):
