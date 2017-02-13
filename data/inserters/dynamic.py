@@ -51,10 +51,8 @@ def insert_games():
                                 game.matchup.home_team, game.matchup.away_team, game.start_time)
                     home_team = TeamModel.objects.get(name=game.matchup.home_team.value)
                     away_team = TeamModel.objects.get(name=game.matchup.away_team.value)
-                    game, created = GameModel.objects.get_or_create(home_team=home_team,
-                                                                    away_team=away_team,
-                                                                    season=season,
-                                                                    start_time=game.start_time,
+                    game, created = GameModel.objects.get_or_create(home_team=home_team, away_team=away_team,
+                                                                    season=season, start_time=game.start_time,
                                                                     source_id=game.game_id)
                     logger.info('Created: %s | Game: %s', created, game)
 
@@ -69,18 +67,14 @@ def insert_box_scores():
                 player_id = player_box_score.player.id
                 team_player_name = player_box_score.player.team.value
                 team = TeamModel.objects.get(name=team_player_name)
-
                 try:
                     player, created = PlayerModel.objects.get_or_create(name=player_name, source_id=player_id)
                     logger.info('Created: %s | Player: %s', created, player)
                 except IntegrityError:
                     logger.error('Player with same source id: %s but different name: %s', player_id, player_name)
                     player = PlayerModel.objects.get(source_id=player_id)
-
-                team_player, created = PlayerTeamModel.objects.get_or_create(player=player,
-                                                                             team=team)
+                team_player, created = PlayerTeamModel.objects.get_or_create(player=player, team=team)
                 logger.info('Created:%s | Team Player: %s', created, team_player)
-
                 box_score, created = NbaGamePlayerBoxScoreModel.objects.get_or_create(
                         game=game, team_player=team_player, status=player_box_score.player.status.type.value,
                         explanation=player_box_score.player.status.comment,
