@@ -40,6 +40,17 @@ class Player(Model):
         return '{0} - {1}'.format(self.name, self.source_id)
 
 
+class TeamPlayer(Model):
+    team = ForeignKey(Team, on_delete=CASCADE)
+    player = ForeignKey(Player, on_delete=CASCADE)
+
+    class Meta:
+        unique_together = ('team', 'player')
+
+    def __unicode__(self):
+        return '{0} - {1}'.format(self.team, self.player)
+
+
 class Game(Model):
     home_team = ForeignKey(Team, on_delete=CASCADE, related_name='home_team')
     away_team = ForeignKey(Team, on_delete=CASCADE, related_name='away_team')
@@ -56,7 +67,7 @@ class Game(Model):
 
 class GamePlayerBoxScore(Model):
     game = ForeignKey(Game, on_delete=CASCADE)
-    player = ForeignKey(Player, on_delete=CASCADE)
+    team_player = ForeignKey(TeamPlayer, on_delete=CASCADE)
     status = CharField(max_length=100)
     explanation = CharField(max_length=250, default=None, null=True)
     seconds_played = BigIntegerField(null=True)
@@ -76,7 +87,7 @@ class GamePlayerBoxScore(Model):
     plus_minus = BigIntegerField(null=True)
 
     class Meta:
-        unique_together = ('game', 'player')
+        unique_together = ('game', 'team_player')
 
     def __unicode__(self):
-        return '{0} - {1}'.format(self.game, self.player)
+        return '{0} - {1}'.format(self.game, self.team_player)
