@@ -1,1 +1,1 @@
-web: gunicorn sports_data.wsgi --log-file -
+web: gunicorn nba_statistics.wsgi --log-file -
