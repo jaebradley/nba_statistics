@@ -1,6 +1,6 @@
 from rest_framework.serializers import ModelSerializer
 
-from data.models import Team, Position, Season, Player, Game, GamePlayerBoxScore
+from data.models import Team, Position, Season, Player, Game, GamePlayerBoxScore, TeamPlayer
 
 
 class PositionSerializer(ModelSerializer):
@@ -27,6 +27,15 @@ class PlayerSerializer(ModelSerializer):
         fields = ('id', 'name', 'source_id')
 
 
+class TeamPlayerSerializer(ModelSerializer):
+    team = TeamSerializer()
+    player = PlayerSerializer()
+
+    class Meta:
+        model = TeamPlayer()
+        fields = ('id', 'team', 'player')
+
+
 class GameSerializer(ModelSerializer):
     home_team = TeamSerializer()
     away_team = TeamSerializer()
@@ -39,11 +48,11 @@ class GameSerializer(ModelSerializer):
 
 class GamePlayerBoxScoreSerializer(ModelSerializer):
     game = GameSerializer()
-    player = PlayerSerializer()
+    team_player = TeamPlayerSerializer()
 
     class Meta:
         model = GamePlayerBoxScore()
-        fields = ('id', 'game', 'player', 'status', 'explanation', 'seconds_played', 'field_goals_made',
+        fields = ('id', 'game', 'team_player', 'status', 'explanation', 'seconds_played', 'field_goals_made',
                   'field_goals_attempted', 'three_point_field_goals_made', 'three_point_field_goals_attempted',
                   'free_throws_made', 'free_throws_attempted', 'offensive_rebounds', 'defensive_rebounds',
                   'assists', 'steals', 'blocks', 'turnovers', 'personal_fouls', 'plus_minus')
