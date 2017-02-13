@@ -27,11 +27,10 @@ urlpatterns = [
     url(r'^', include(router.urls)),
 
     url(r'^teams/$', teams_list, name='teams_list'),
-    url(r'^teams/(?P<team_id>[0-9]+)/$', team_detail, name='team_detail'),
+    url(r'^teams/(?P<pk>[0-9]+)/$', team_detail, name='team_detail'),
 
     url(r'^players/$', players_list, name='players_list'),
-    url(r'^players/(?P<player_id>[0-9]+)$',
-        player_detail, name='player_detail'),
+    url(r'^players/(?P<player_id>[0-9]+)$', player_detail, name='player_detail'),
 
     url(r'^games/$', games_list, name='games_list'),
     url(r'^games/(?P<game_id>[0-9]+)/$', game_detail, name='game_detail'),

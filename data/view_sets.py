@@ -2,6 +2,7 @@
 
 from rest_framework.response import Response
 from rest_framework.viewsets import ReadOnlyModelViewSet
+from datetime import datetime
 
 from data.models import Team, Position, Season, Player, Game, GamePlayerBoxScore
 from data.serializers import TeamSerializer, PositionSerializer, SeasonSerializer, PlayerSerializer, GameSerializer, \
@@ -19,84 +20,100 @@ class QuerySetReadOnlyViewSet(ReadOnlyModelViewSet):
         return Response(serializer.data)
 
 
-class PositionViewSet(QuerySetReadOnlyViewSet):
+class PositionViewSet(ReadOnlyModelViewSet):
     serializer_class = PositionSerializer
-    queryset = Position.objects.all().order_by('name')
 
-    def list_positions(self, request, *args, **kwargs):
-        return self.build_response(queryset=self.get_queryset())
-
-    def retrieve_position(self, request, *args, **kwargs):
-        result = self.queryset.filter(position__id=kwargs.get('position_id'))
-        return self.build_response(queryset=result)
+    def get_queryset(self):
+        return Position.objects.all().order_by('name')
 
 
-class TeamViewSet(QuerySetReadOnlyViewSet):
+class TeamViewSet(ReadOnlyModelViewSet):
     serializer_class = TeamSerializer
-    queryset = Team.objects.all().order_by('name')
 
-    def list_teams(self, request, *args, **kwargs):
-        return self.build_response(queryset=self.get_queryset())
-
-    def retrieve_team(self, request, *args, **kwargs):
-        result = self.queryset.filter(id=kwargs.get('team_id'))
-        return self.build_response(queryset=result)
+    def get_queryset(self):
+        return Team.objects.all().order_by('name')
 
 
-class SeasonViewSet(QuerySetReadOnlyViewSet):
+class SeasonViewSet(ReadOnlyModelViewSet):
     serializer_class = SeasonSerializer
-    queryset = Season.objects.all().order_by('start_time', 'end_time')
 
-    def list_seasons(self, request, *args, **kwargs):
-        return self.build_response(queryset=self.get_queryset())
-
-    def retrieve_team(self, request, *args, **kwargs):
-        result = self.get_queryset()
-        if 'team_id' in kwargs:
-            result = result.filter(id=kwargs.get('team_id'))
-
-        return self.build_response(queryset=result)
+    def get_queryset(self):
+        return Season.objects.all().order_by('start_time')
 
 
-class PlayerViewSet(QuerySetReadOnlyViewSet):
+class PlayerViewSet(ReadOnlyModelViewSet):
     serializer_class = PlayerSerializer
-    queryset = Player.objects.all().order_by('name')
 
-    def list_players(self, request, *args, **kwargs):
-        result = self.get_queryset()
-        if 'source_id' in kwargs:
-            result = result.filter(source_id=kwargs.get('source_id'))
+    def get_queryset(self):
+        result = Player.objects.all().order_by('name')
 
-        if 'name' in kwargs:
-            result = result.filter(name=kwargs.get('name'))
+        name = self.request.query_params.get('name', None)
+        source_id = self.request.query_params.get('source_id', None)
 
-        return self.build_response(queryset=result)
+        if name is not None:
+            result = result.filter(name=name)
 
-    def retrieve_player(self, request, *args, **kwargs):
-        result = self.queryset.filter(id=kwargs.get('player_id'))
-        return self.build_response(queryset=result)
+        if source_id is not None:
+            result = result.filter(source_id=source_id)
+
+        return result
 
 
-class GameViewSet(QuerySetReadOnlyViewSet):
+class GameViewSet(ReadOnlyModelViewSet):
     serializer_class = GameSerializer
-    queryset = Game.objects.all().order_by('start_time')
 
-    def list_games(self, request, *args, **kwargs):
-        return self.build_response(queryset=self.get_queryset())
+    def get_queryset(self):
+        result = Game.objects.all().order_by('start_time')
 
-    def retrieve_game(self, request, *args, **kwargs):
-        result = self.queryset.filter(id=kwargs.get('game_id'))
+        home_team_id = self.request.query_params.get('home_team_id', None)
+        away_team_id = self.request.query_params.get('away_team_id', None)
+        season_id = self.request.query_params.get('season_id', None)
+        source_id = self.request.query_params.get('source_id', None)
 
-        return self.build_response(queryset=result)
+        if home_team_id is not None:
+            result = result.filter(home_team__id=home_team_id)
+
+        if away_team_id is not None:
+            result = result.filter(away_team__id=away_team_id)
+
+        if season_id is not None:
+            result = result.filter(season__id=season_id)
+
+        if source_id is not None:
+            result = result.filter(source_id=source_id)
+
+        return result
 
 
 class GamePlayerBoxScoreViewSet(QuerySetReadOnlyViewSet):
     serializer_class = GamePlayerBoxScoreSerializer
-    queryset = GamePlayerBoxScore.objects.all().order_by('game__start_time')
 
-    def list_game_player_box_scores(self, request, *args, **kwargs):
-        return self.build_response(queryset=self.get_queryset())
+    def get_queryset(self):
+        result = GamePlayerBoxScore.objects.all().order_by('game__start_time')
 
-    def retrieve_game_player_box_score(self, request, *args, **kwargs):
-        result = self.queryset.filter(id=kwargs.get('game_player_box_score_id'))
-        return self.build_response(queryset=result)
+        home_team_id = self.request.query_params.get('home_team_id', None)
+        away_team_id = self.request.query_params.get('away_team_id', None)
+        season_id = self.request.query_params.get('season_id', None)
+        game_source_id = self.request.query_params.get('game_source_id', None)
+        player_name = self.request.query_params.get('player_name', None)
+        player_source_id = self.request.query_params.get('player_source_id', None)
+
+        if home_team_id is not None:
+            result = result.filter(game__home_team__id=home_team_id)
+
+        if away_team_id is not None:
+            result = result.filter(game__away_team__id=away_team_id)
+
+        if season_id is not None:
+            result = result.filter(game__season__id=season_id)
+
+        if game_source_id is not None:
+            result = result.filter(game__source_id=game_source_id)
+
+        if player_name is not None:
+            result = result.filter(player__name=player_name)
+
+        if player_source_id is not None:
+            result = result.filter(player_source_id=player_source_id)
+
+        return result
