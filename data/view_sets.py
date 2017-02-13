@@ -97,6 +97,8 @@ class GamePlayerBoxScoreViewSet(QuerySetReadOnlyViewSet):
         game_source_id = self.request.query_params.get('game_source_id', None)
         player_name = self.request.query_params.get('player_name', None)
         player_source_id = self.request.query_params.get('player_source_id', None)
+        start_time_gte = self.request.query_params.get('start_time_gte', None)
+        start_time_lte = self.request.query_params.get('start_time_lte', None)
 
         if home_team_id is not None:
             result = result.filter(game__home_team__id=home_team_id)
@@ -115,5 +117,11 @@ class GamePlayerBoxScoreViewSet(QuerySetReadOnlyViewSet):
 
         if player_source_id is not None:
             result = result.filter(player_source_id=player_source_id)
+
+        if start_time_gte is not None:
+            result = result.filter(game__start_time__gte=datetime.fromtimestamp(timestamp=start_time_gte))
+
+        if start_time_lte is not None:
+            result = result.filter(game__start_time__lte=datetime.fromtimestamp(timestamp=start_time_lte))
 
         return result
