@@ -43,7 +43,7 @@ class GameSerializer(ModelSerializer):
 
     class Meta:
         model = Game()
-        fields = ('id', 'home_team', 'away_team', 'season', 'start_time')
+        fields = ('id', 'home_team', 'away_team', 'season', 'start_time', 'source_id')
 
 
 class GamePlayerBoxScoreSerializer(ModelSerializer):
