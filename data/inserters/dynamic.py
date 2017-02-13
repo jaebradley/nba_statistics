@@ -10,7 +10,7 @@ from django.db.utils import IntegrityError
 from nba_data import Client as NbaClient, Season as NbaSeason, DateRange as NbaDateRange
 
 from data.models import Team as TeamModel, Season as SeasonModel, Player as PlayerModel, \
-    Game as GameModel, GamePlayerBoxScore as NbaGamePlayerBoxScoreModel
+    Game as GameModel, GamePlayerBoxScore as NbaGamePlayerBoxScoreModel, TeamPlayer as PlayerTeamModel
 
 logging.config.fileConfig(os.path.join(os.path.dirname(__file__), '../../logging.conf'))
 logger = logging.getLogger('inserter')
@@ -67,6 +67,7 @@ def insert_box_scores():
             for player_box_score in traditional_box_score.player_box_scores:
                 player_name = player_box_score.player.name.strip()
                 player_id = player_box_score.player.id
+                team_player_name = player_box_score.player.team.value
 
                 try:
                     player, created = PlayerModel.objects.get_or_create(name=player_name, source_id=player_id)
@@ -75,8 +76,12 @@ def insert_box_scores():
                     logger.error('Player with same source id: %s but different name: %s', player_id, player_name)
                     player = PlayerModel.objects.get(source_id=player_id)
 
+                team_player, created = PlayerTeamModel.objects.get_or_create(player=player,
+                                                                             team__name=team_player_name)
+                logger.info('Created:%s | Team Player: %s', created, team_player)
+
                 box_score, created = NbaGamePlayerBoxScoreModel.objects.get_or_create(
-                        game=game, player=player, status=player_box_score.player.status.type.value,
+                        game=game, team_player=team_player, status=player_box_score.player.status.type.value,
                         explanation=player_box_score.player.status.comment,
                         seconds_played=player_box_score.seconds_played,
                         field_goals_made=player_box_score.field_goals_made,
