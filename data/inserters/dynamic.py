@@ -68,6 +68,7 @@ def insert_box_scores():
                 player_name = player_box_score.player.name.strip()
                 player_id = player_box_score.player.id
                 team_player_name = player_box_score.player.team.value
+                team = TeamModel.objects.get(name=team_player_name)
 
                 try:
                     player, created = PlayerModel.objects.get_or_create(name=player_name, source_id=player_id)
@@ -77,7 +78,7 @@ def insert_box_scores():
                     player = PlayerModel.objects.get(source_id=player_id)
 
                 team_player, created = PlayerTeamModel.objects.get_or_create(player=player,
-                                                                             team__name=team_player_name)
+                                                                             team=team)
                 logger.info('Created:%s | Team Player: %s', created, team_player)
 
                 box_score, created = NbaGamePlayerBoxScoreModel.objects.get_or_create(
