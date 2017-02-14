@@ -1,5 +1,5 @@
 from data.view_sets import PositionViewSet, TeamViewSet, PlayerViewSet, GameViewSet, SeasonViewSet, \
-    GamePlayerBoxScoreViewSet, TeamPlayerViewSet
+    GamePlayerBoxScoreViewSet, TeamPlayerViewSet, GameDatesViewSet
 
 positions_list = PositionViewSet.as_view({
     'get': 'list'
@@ -55,4 +55,8 @@ game_player_box_scores_list = GamePlayerBoxScoreViewSet.as_view({
 
 game_player_box_score_detail = GamePlayerBoxScoreViewSet.as_view({
     'get': 'retrieve'
+})
+
+game_dates_list = GameDatesViewSet.as_view({
+    'get': 'list'
 })
