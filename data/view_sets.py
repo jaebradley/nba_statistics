@@ -1,8 +1,9 @@
 # Create your views here.
 
-from rest_framework.response import Response
-from rest_framework.viewsets import ReadOnlyModelViewSet
 from datetime import datetime
+
+from rest_framework.response import Response
+from rest_framework.viewsets import ReadOnlyModelViewSet, ViewSet
 
 from data.models import Team, Position, Season, Player, Game, GamePlayerBoxScore, TeamPlayer
 from data.serializers import TeamSerializer, PositionSerializer, SeasonSerializer, PlayerSerializer, GameSerializer, \
@@ -138,3 +139,10 @@ class GamePlayerBoxScoreViewSet(ReadOnlyModelViewSet):
             result = result.filter(game__start_time__lte=datetime.fromtimestamp(timestamp=start_time_lte))
 
         return result
+
+
+class GameDatesViewSet(ViewSet):
+    queryset = Game.objects.filter(start_time__lte=datetime.now()).datetimes('start_time', 'day', order='ASC')
+
+    def list(self, request):
+        return Response(self.queryset)

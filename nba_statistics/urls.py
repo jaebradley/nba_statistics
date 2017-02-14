@@ -19,7 +19,7 @@ from rest_framework.routers import DefaultRouter
 
 from data.views import team_detail, teams_list, players_list, games_list, player_detail, game_detail, seasons_list, \
     season_detail, positions_list, position_detail, game_player_box_scores_list, game_player_box_score_detail, \
-    team_player_detail, team_players_list
+    team_player_detail, team_players_list, game_dates_list
 
 # Create a router and register our viewsets with it.
 router = DefaultRouter()
@@ -45,5 +45,7 @@ urlpatterns = [
     url(r'^positions/(?P<position_id>[0-9]+)/$', position_detail, name='position_detail'),
 
     url(r'^box-scores/$', game_player_box_scores_list, name='game_player_box_scores_list'),
-    url(r'^box-scores/(?P<box_score_id>[0-9]+)/$', game_player_box_score_detail, name='game_player_box_score_detail')
+    url(r'^box-scores/(?P<box_score_id>[0-9]+)/$', game_player_box_score_detail, name='game_player_box_score_detail'),
+
+    url(r'^game-dates/$', game_dates_list, name='game_dates_list'),
 ]
