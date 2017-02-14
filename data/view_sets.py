@@ -142,7 +142,7 @@ class GamePlayerBoxScoreViewSet(ReadOnlyModelViewSet):
 
 
 class GameDatesViewSet(ViewSet):
-    queryset = Game.objects.datetimes('start_time', 'day', order='ASC')
+    queryset = Game.objects.filter(start_time__lte=datetime.now()).datetimes('start_time', 'day', order='ASC')
 
     def list(self, request):
         return Response(self.queryset)
